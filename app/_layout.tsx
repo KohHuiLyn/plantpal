@@ -10,8 +10,8 @@ import { useColorScheme } from '@/components/useColorScheme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary
+    // Catch any errors thrown by the Layout component.
+    ErrorBoundary
 } from 'expo-router';
 
 export const unstable_settings = {
@@ -85,6 +85,13 @@ function RootLayoutNav() {
         />
           <Stack.Screen
           name="diagnosisResult"
+          options={{
+            headerShown: false
+          }}
+        />
+        {/* 🔍 Search Screen */}
+        <Stack.Screen
+          name="search"
           options={{
             headerShown: false
           }}

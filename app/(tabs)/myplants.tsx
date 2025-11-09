@@ -125,7 +125,7 @@ export default function MyPlants() {
               color={isSelectionMode ? "#4CAF50" : "#1a1a1a"} 
             />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push({ pathname: "/search", params: { source: "myplants" } })}>
             <MaterialCommunityIcons name="magnify" size={24} color="#1a1a1a" />
           </TouchableOpacity>
         </View>

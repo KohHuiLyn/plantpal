@@ -5,7 +5,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera"
 import * as ImagePicker from "expo-image-picker"
 import { useRouter } from "expo-router"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
@@ -67,21 +67,17 @@ export default function DiagnosisCamera() {
     setFlash((current) => (current === "off" ? "on" : "off"))
   }
 
+  // Auto-request permission when component mounts if not granted
+  useEffect(() => {
+    if (permission && !permission.granted) {
+      requestPermission()
+    }
+  }, [permission])
+
   if (!permission) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color="#4CAF50" />
-      </View>
-    )
-  }
-
-  if (!permission.granted) {
-    return (
-      <View style={[styles.container, styles.centerContent]}>
-        <Text style={styles.permissionText}>We need your permission to use the camera</Text>
-        <TouchableOpacity style={styles.permissionButton} onPress={requestPermission}>
-          <Text style={styles.permissionButtonText}>Grant Permission</Text>
-        </TouchableOpacity>
       </View>
     )
   }
@@ -128,6 +124,36 @@ export default function DiagnosisCamera() {
           <MaterialCommunityIcons name="camera-flip" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
+
+      {/* Permission Dialog Overlay */}
+      {!permission.granted && (
+        <View style={styles.permissionOverlay}>
+          <View style={styles.permissionDialog}>
+            <View style={styles.permissionIconContainer}>
+              <MaterialCommunityIcons name="folder" size={48} color="#2196F3" />
+            </View>
+            <Text style={styles.permissionText}>
+              Allow APP to access photos,{'\n'}media, and files on your{'\n'}device?
+            </Text>
+            <View style={styles.permissionDivider} />
+            <TouchableOpacity 
+              style={styles.permissionButton} 
+              onPress={requestPermission}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.permissionButtonText}>Allow</Text>
+            </TouchableOpacity>
+            <View style={styles.permissionDivider} />
+            <TouchableOpacity 
+              style={styles.permissionButton} 
+              onPress={() => router.back()}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.permissionButtonText}>Deny</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </View>
   )
 }
@@ -142,22 +168,54 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: hs(20),
   },
+  permissionOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: hs(20),
+    zIndex: 1000,
+  },
+  permissionDialog: {
+    backgroundColor: "#fff",
+    borderRadius: ms(12),
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    width: "100%",
+    maxWidth: hs(320),
+    overflow: "hidden",
+  },
+  permissionIconContainer: {
+    alignItems: "center",
+    paddingTop: vs(24),
+    paddingBottom: vs(16),
+  },
   permissionText: {
     fontSize: ms(16),
-    color: "#fff",
+    color: "#000",
     textAlign: "center",
-    marginBottom: vs(20),
+    paddingHorizontal: hs(20),
+    paddingBottom: vs(20),
+    lineHeight: ms(22),
+  },
+  permissionDivider: {
+    height: 1,
+    backgroundColor: "#E0E0E0",
   },
   permissionButton: {
-    backgroundColor: "#4CAF50",
-    paddingHorizontal: hs(24),
-    paddingVertical: vs(12),
-    borderRadius: ms(8),
+    width: "100%",
+    paddingVertical: vs(16),
+    alignItems: "center",
+    justifyContent: "center",
   },
   permissionButtonText: {
     fontSize: ms(16),
-    fontWeight: "600",
-    color: "#fff",
+    color: "#2196F3",
+    fontWeight: "400",
   },
   header: {
     flexDirection: "row",

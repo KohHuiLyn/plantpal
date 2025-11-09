@@ -78,7 +78,7 @@ export default function PlantPedia() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>PlantPedia</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push({ pathname: "/search", params: { source: "plantpedia" } })}>
           <MaterialCommunityIcons name="magnify" size={24} color="#1a1a1a" />
         </TouchableOpacity>
       </View>
